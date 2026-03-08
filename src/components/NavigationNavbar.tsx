@@ -20,14 +20,17 @@ export function NavigationNavbar() {
 
 	const menuItems = [
 		{ name: "New Search", href: "/" },
-		{ name: "Ongoing Searches", href: "/ongoing-searches" },
+		{ name: "Lookups", href: "/lookups" },
 		{ name: "Settings", href: "/settings" },
-		{ name: "Archive", href: "/archive" },
-		{ name: "Auth", href: "/auth" },
+		// { name: "Auth", href: "/auth" },
 	];
 
 	return (
-		<Navbar onMenuOpenChange={setIsMenuOpen} className="bg-background">
+		<Navbar
+			isMenuOpen={isMenuOpen}
+			onMenuOpenChange={setIsMenuOpen}
+			className="bg-background"
+		>
 			<NavbarContent>
 				<NavbarMenuToggle
 					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -69,6 +72,7 @@ export function NavigationNavbar() {
 							className="w-full text-lg"
 							href={item.href}
 							size="lg"
+							onPress={() => setIsMenuOpen(false)}
 						>
 							{item.name}
 						</Link>

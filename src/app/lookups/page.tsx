@@ -20,7 +20,7 @@ type FlightSearch = {
 	link: string;
 };
 
-const fetchOngoingSearches = async (): Promise<FlightSearch[]> => {
+const fetchLookups = async (): Promise<FlightSearch[]> => {
 	// Mock API delay
 	await new Promise((resolve) => setTimeout(resolve, 800));
 	return [
@@ -48,18 +48,18 @@ const fetchOngoingSearches = async (): Promise<FlightSearch[]> => {
 	];
 };
 
-export default function OngoingSearches() {
+export default function Lookups() {
 	const { data, isLoading } = useQuery({
-		queryKey: ["ongoing-searches"],
-		queryFn: fetchOngoingSearches,
+		queryKey: ["lookups"],
+		queryFn: fetchLookups,
 	});
 
 	return (
 		<div className="flex flex-col gap-6">
-			<h1 className="text-3xl font-bold">Ongoing Searches</h1>
+			<h1 className="text-3xl font-bold">Lookups</h1>
 
 			<div className="w-full overflow-x-auto">
-				<Table aria-label="Ongoing searches table" isStriped>
+				<Table aria-label="Lookups table" isStriped>
 					<TableHeader>
 						<TableColumn>FLIGHT COMPANY</TableColumn>
 						<TableColumn>DATE / TIME</TableColumn>
@@ -75,7 +75,7 @@ export default function OngoingSearches() {
 							<TableRow key={flight.id}>
 								<TableCell>
 									<Link
-										href={`/ongoing-searches/${flight.id}`}
+										href={`/lookups/${flight.id}`}
 										className="text-primary font-medium"
 									>
 										{flight.company}
