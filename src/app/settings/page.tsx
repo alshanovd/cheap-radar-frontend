@@ -1,8 +1,19 @@
 "use client";
 
 import { Card, CardBody, Switch } from "@heroui/react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+
 
 export default function Settings() {
+	const { theme, systemTheme, setTheme } = useTheme();
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => setMounted(true), []);
+	
+	const isDark =
+		theme === "dark" || (theme === "system" && systemTheme === "dark");
+
 	return (
 		<div className="flex flex-col gap-6">
 			<h1 className="text-3xl font-bold">Settings</h1>
@@ -28,7 +39,11 @@ export default function Settings() {
 								Managed via system preferences mostly
 							</p>
 						</div>
-						<Switch defaultSelected color="secondary" />
+						<Switch
+							color="secondary"
+							isSelected={mounted ? isDark : undefined}
+							onValueChange={(checked) => setTheme(checked ? "dark" : "light")}
+						/>
 					</CardBody>
 				</Card>
 			</div>
