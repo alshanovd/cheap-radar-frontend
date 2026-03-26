@@ -21,7 +21,7 @@ type AirportOption = {
 };
 
 export function FlightSearchForm() {
-	// Store selected airport IATA codes.
+	////// Store selected airport IATA codes.
 	const [from, setFrom] = useState("SYD");
 	const [to, setTo] = useState("MEL");
 	const [checksPerDay, setChecksPerDay] = useState("5");
