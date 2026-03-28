@@ -1,4 +1,3 @@
-/** Меняй URL здесь, если бэкенд переедет (без .env). */
 const API_BASE = "https://cheap-radar-backend-1215e7aa2560.herokuapp.com".replace(
 	/\/$/,
 	"",
