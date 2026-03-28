@@ -1,6 +1,6 @@
 "use client";
 
-import { FlightSearchForm } from "@/components/FlightSearchForm";
+import { FlightSearchForm } from "@/app/components/FlightSearchForm";
 
 export default function Home() {
 	return (
