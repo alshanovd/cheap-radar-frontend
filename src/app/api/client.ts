@@ -1,4 +1,8 @@
-const base = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/$/, "");
+/** Меняй URL здесь, если бэкенд переедет (без .env). */
+const API_BASE = "https://cheap-radar-backend-1215e7aa2560.herokuapp.com".replace(
+	/\/$/,
+	"",
+);
 
 export async function apiFetch<T>(
 	path: string,
@@ -6,7 +10,7 @@ export async function apiFetch<T>(
 ): Promise<T> {
 	const url = path.startsWith("http")
 		? path
-		: `${base}${path.startsWith("/") ? "" : "/"}${path}`;
+		: `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
 	const res = await fetch(url, {
 		...init,
 		headers: {
