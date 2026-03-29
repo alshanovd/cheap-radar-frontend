@@ -3,6 +3,8 @@
 import { Card, CardBody, Switch } from "@heroui/react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getSettings } from "@/app/api/settings";
 
 
 export default function Settings() {
@@ -11,6 +13,11 @@ export default function Settings() {
 
 	useEffect(() => setMounted(true), []);
 	
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["settings"],
+		queryFn: getSettings,
+	});
+
 	const isDark =
 		theme === "dark" || (theme === "system" && systemTheme === "dark");
 
