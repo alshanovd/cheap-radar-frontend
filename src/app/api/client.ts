@@ -1,7 +1,9 @@
-const API_BASE = "https://cheap-radar-backend-1215e7aa2560.herokuapp.com".replace(
-	/\/$/,
-	"",
-);
+// const API_BASE = "https://cheap-radar-backend-1215e7aa2560.herokuapp.com".replace(
+// 	/\/$/,
+// 	"",
+// );
+
+const base = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/$/, "");
 
 export async function apiFetch<T>(
 	path: string,
@@ -9,7 +11,7 @@ export async function apiFetch<T>(
 ): Promise<T> {
 	const url = path.startsWith("http")
 		? path
-		: `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+		: `${base}${path.startsWith("/") ? "" : "/"}${path}`;
 	const res = await fetch(url, {
 		...init,
 		headers: {
