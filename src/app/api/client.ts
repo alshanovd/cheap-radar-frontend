@@ -1,8 +1,3 @@
-// const API_BASE = "https://cheap-radar-backend-1215e7aa2560.herokuapp.com".replace(
-// 	/\/$/,
-// 	"",
-// );
-
 const base = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/$/, "");
 
 export async function apiFetch<T>(
