@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { I18nProvider } from "@react-aria/i18n";
 import { useState } from "react";
+import { RemoteSettingsSync } from "@/app/components/RemoteSettingsSync";
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
@@ -25,6 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 			<I18nProvider locale="en-GB">
 				<HeroUIProvider navigate={router.push}>
 					<NextThemesProvider attribute="class" defaultTheme="dark">
+						<RemoteSettingsSync />
 						{children}
 					</NextThemesProvider>
 				</HeroUIProvider>

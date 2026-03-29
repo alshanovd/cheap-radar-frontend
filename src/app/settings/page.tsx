@@ -18,13 +18,6 @@ export default function Settings() {
 		queryFn: getSettings,
 	});
 
-	useEffect(() => {
-		if (!data?.theme) return;
-		if (data.theme === "dark" || data.theme === "light") {
-			setTheme(data.theme);
-		}
-	}, [data?.theme, setTheme]);
-	
 	const isDark =
 		theme === "dark" || (theme === "system" && systemTheme === "dark");
 
