@@ -1,6 +1,7 @@
 "use client";
 
 import { getSettings } from "@/app/api/settings";
+import { Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
@@ -8,7 +9,7 @@ import { useEffect } from "react";
 export function RemoteSettingsSync() {
 	const { setTheme } = useTheme();
 
-	const { data } = useQuery({
+	const { data, isPending } = useQuery({
 		queryKey: ["settings"],
 		queryFn: getSettings,
 	});
@@ -20,5 +21,15 @@ export function RemoteSettingsSync() {
 		}
 	}, [data?.theme, setTheme]);
 
-	return null;
+	if (!isPending) return null;
+
+	return (
+		<div
+			className="fixed inset-0 z-[200] flex items-center justify-center bg-background/70 backdrop-blur-sm"
+			aria-busy="true"
+			aria-live="polite"
+		>
+			<Spinner size="lg" label="Loading settings…" />
+		</div>
+	);
 }
