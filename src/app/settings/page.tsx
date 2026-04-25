@@ -66,6 +66,10 @@ export default function Settings() {
 
 	const updateSettingsMutation = useMutation({
 		mutationFn: updateSettings,
+		onMutate: (settings) => {
+			void queryClient.cancelQueries({ queryKey: ["settings"] });
+			queryClient.setQueryData(["settings"], settings);
+		},
 		onSuccess: (settings) => {
 			queryClient.setQueryData(["settings"], settings);
 			showSavedNotice();
@@ -74,11 +78,14 @@ export default function Settings() {
 
 	const resolvedTheme = theme === "system" ? systemTheme : theme;
 	const isDark = mounted && resolvedTheme === "dark";
-	const controlsDisabled =
-		isLoading || updateSettingsMutation.isPending || !data;
+	const controlsDisabled = isLoading || !data;
 
-	const saveSettings = (settings: RemoteSettings) => {
-		updateSettingsMutation.mutate(settings);
+	const saveSettings = (settings: Partial<RemoteSettings>) => {
+		const currentSettings =
+			queryClient.getQueryData<RemoteSettings>(["settings"]) ?? data;
+
+		if (!currentSettings) return;
+		updateSettingsMutation.mutate({ ...currentSettings, ...settings });
 	};
 
 	return (
@@ -115,8 +122,7 @@ export default function Settings() {
 							isDisabled={controlsDisabled}
 							isSelected={data?.notifications ?? false}
 							onValueChange={(notifications) => {
-								if (!data) return;
-								saveSettings({ ...data, notifications });
+								saveSettings({ notifications });
 							}}
 						/>
 					</CardBody>
@@ -137,11 +143,10 @@ export default function Settings() {
 							isDisabled={controlsDisabled || !mounted}
 							isSelected={isDark}
 							onValueChange={(checked) => {
-								if (!data) return;
 								const nextTheme = checked ? "dark" : "light";
 
 								setTheme(nextTheme);
-								saveSettings({ ...data, theme: nextTheme });
+								saveSettings({ theme: nextTheme });
 							}}
 						/>
 					</CardBody>
@@ -150,12 +155,20 @@ export default function Settings() {
 				<Card>
 					<CardBody className="p-6">
 						<Select
-							isDisabled
+							isDisabled={controlsDisabled}
 							label="Currency"
 							name="currency"
 							selectedKeys={[data?.currency ?? "USD"]}
+							onSelectionChange={(keys) => {
+								if (keys === "all") return;
+								const [currency] = Array.from(keys);
+
+								if (!currency) return;
+								saveSettings({ currency: String(currency) });
+							}}
 						>
 							<SelectItem key="USD">USD</SelectItem>
+							<SelectItem key="RUB">RUB</SelectItem>
 						</Select>
 					</CardBody>
 				</Card>
