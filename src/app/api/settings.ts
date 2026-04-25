@@ -5,5 +5,13 @@ export type RemoteSettings = {
 	notifications: boolean;
 };
 export function getSettings() {
-	return apiFetch<RemoteSettings>("/api/setting");
+	return apiFetch<RemoteSettings>("/api/settings");
+}
+
+export function updateSettings(settings: RemoteSettings) {
+	return apiFetch<RemoteSettings>("/api/settings", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ ...settings, user_id: 1 }),
+	});
 }

@@ -58,7 +58,7 @@ export function NavigationNavbar() {
 
 			<NavbarContent justify="end">
 				<NavbarItem>
-					<Button as={Link} color="primary" href="/auth" variant="flat">
+				<Button color="primary" isDisabled variant="flat">
 						Sign In
 					</Button>
 				</NavbarItem>

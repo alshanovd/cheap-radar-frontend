@@ -40,7 +40,7 @@ export default function Auth() {
 							variant="bordered"
 						/>
 
-						<Button color="primary" className="w-full h-12 mt-2">
+						<Button color="primary" className="w-full h-12 mt-2" isDisabled={isLogin}>
 							{isLogin ? "Sign In" : "Sign Up"}
 						</Button>
 					</div>
