@@ -23,6 +23,7 @@ export default function Settings() {
 	const [mounted, setMounted] = useState(false);
 	const [showSaved, setShowSaved] = useState(false);
 	const [isSavedVisible, setIsSavedVisible] = useState(false);
+	const savedShowFrame = useRef<number | null>(null);
 	const savedHideTimer = useRef<number | null>(null);
 	const savedRemoveTimer = useRef<number | null>(null);
 
@@ -41,6 +42,8 @@ export default function Settings() {
 
 	useEffect(() => {
 		return () => {
+			if (savedShowFrame.current)
+				window.cancelAnimationFrame(savedShowFrame.current);
 			if (savedHideTimer.current) window.clearTimeout(savedHideTimer.current);
 			if (savedRemoveTimer.current)
 				window.clearTimeout(savedRemoveTimer.current);
@@ -48,11 +51,17 @@ export default function Settings() {
 	}, []);
 
 	const showSavedNotice = () => {
+		if (savedShowFrame.current)
+			window.cancelAnimationFrame(savedShowFrame.current);
 		if (savedHideTimer.current) window.clearTimeout(savedHideTimer.current);
 		if (savedRemoveTimer.current) window.clearTimeout(savedRemoveTimer.current);
 
 		setShowSaved(true);
-		setIsSavedVisible(true);
+		setIsSavedVisible(false);
+
+		savedShowFrame.current = window.requestAnimationFrame(() => {
+			setIsSavedVisible(true);
+		});
 
 		savedHideTimer.current = window.setTimeout(
 			() => setIsSavedVisible(false),
@@ -72,7 +81,6 @@ export default function Settings() {
 		},
 		onSuccess: (settings) => {
 			queryClient.setQueryData(["settings"], settings);
-			showSavedNotice();
 		},
 	});
 
@@ -85,6 +93,7 @@ export default function Settings() {
 			queryClient.getQueryData<RemoteSettings>(["settings"]) ?? data;
 
 		if (!currentSettings) return;
+		showSavedNotice();
 		updateSettingsMutation.mutate({ ...currentSettings, ...settings });
 	};
 
@@ -96,7 +105,7 @@ export default function Settings() {
 					<Chip
 						color="success"
 						variant="flat"
-						className={`transition-opacity duration-300 ${
+						className={`transition-opacity duration-500 ${
 							isSavedVisible ? "opacity-100" : "opacity-0"
 						}`}
 					>
