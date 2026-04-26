@@ -7,6 +7,11 @@ export const PROVIDER_OPTIONS = ["GOOGLE", "TEST"];
 const CHECK_OPTION_COUNT = 9;
 const API_DATE_FORMAT = "YYYY-MM-DD";
 
+export type LastCheckOption = {
+	value: string;
+	label: string;
+};
+
 function toCalendarDate(date: moment.Moment) {
 	return parseDate(date.format(API_DATE_FORMAT));
 }
@@ -21,6 +26,30 @@ export function getInitialDateTo() {
 
 export function formatCalendarDate(date: CalendarDate) {
 	return moment(date.toString(), API_DATE_FORMAT).format(API_DATE_FORMAT);
+}
+
+export function getInclusiveDaysCount(
+	dateFrom: CalendarDate | null,
+	dateTo: CalendarDate | null,
+) {
+	if (!dateFrom || !dateTo) return 0;
+
+	const from = moment(formatCalendarDate(dateFrom), API_DATE_FORMAT);
+	const to = moment(formatCalendarDate(dateTo), API_DATE_FORMAT);
+	const daysDiff = to.diff(from, "days");
+
+	return daysDiff < 0 ? 0 : daysDiff + 1;
+}
+
+export function getSelectedCheckCount(
+	checkFinishAt: string,
+	lastCheckOptions: LastCheckOption[],
+) {
+	const selectedIndex = lastCheckOptions.findIndex(
+		(option) => option.value === checkFinishAt,
+	);
+
+	return selectedIndex === -1 ? 0 : selectedIndex + 1;
 }
 
 export function getLastCheckOptions(intervalHours: number) {

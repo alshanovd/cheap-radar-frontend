@@ -4,6 +4,7 @@ import {
 	Button,
 	Checkbox,
 	CheckboxGroup,
+	Chip,
 	DatePicker,
 	Select,
 	SelectItem,
@@ -21,9 +22,12 @@ import {
 import {
 	CHECK_INTERVAL_OPTIONS,
 	formatCalendarDate,
+	getInclusiveDaysCount,
 	getInitialDateFrom,
 	getInitialDateTo,
 	getLastCheckOptions,
+	getSelectedCheckCount,
+	type LastCheckOption,
 	PROVIDER_OPTIONS,
 } from "./utils";
 
@@ -51,9 +55,9 @@ export function FlightSearchForm() {
 	const [from, setFrom] = useState("SYD");
 	const [to, setTo] = useState("MEL");
 	const [checkIntervalKey, setCheckIntervalKey] = useState("");
-	const [lastCheckOptions, setLastCheckOptions] = useState<
-		{ value: string; label: string }[]
-	>([]);
+	const [lastCheckOptions, setLastCheckOptions] = useState<LastCheckOption[]>(
+		[],
+	);
 	const [checkFinishAt, setCheckFinishAt] = useState("");
 	const [providers, setProviders] = useState<string[]>(["TEST"]);
 
@@ -71,6 +75,12 @@ export function FlightSearchForm() {
 	});
 	const isSubmitting = createSearchMutation.isPending;
 	const checkIntervalHours = checkIntervalKey ? Number(checkIntervalKey) : null;
+	const daysCount = getInclusiveDaysCount(dateFrom, dateTo);
+	const selectedCheckCount = getSelectedCheckCount(
+		checkFinishAt,
+		lastCheckOptions,
+	);
+	const checksTotal = daysCount * providers.length * selectedCheckCount;
 
 	const handleSearch = () => {
 		if (
@@ -190,20 +200,25 @@ export function FlightSearchForm() {
 					))}
 				</Select>
 
-				<CheckboxGroup
-					label="Providers"
-					orientation="horizontal"
-					value={providers}
-					isDisabled={isSubmitting}
-					onValueChange={setProviders}
-					className="w-full lg:flex-1"
-				>
-					{PROVIDER_OPTIONS.map((provider) => (
-						<Checkbox key={provider} value={provider}>
-							{provider}
-						</Checkbox>
-					))}
-				</CheckboxGroup>
+				<div className="flex w-full flex-col gap-2 lg:flex-1">
+					<CheckboxGroup
+						label="Providers"
+						orientation="horizontal"
+						value={providers}
+						isDisabled={isSubmitting}
+						onValueChange={setProviders}
+					>
+						{PROVIDER_OPTIONS.map((provider) => (
+							<Checkbox key={provider} value={provider}>
+								{provider}
+							</Checkbox>
+						))}
+					</CheckboxGroup>
+
+					<Chip color="primary" variant="flat" className="w-fit">
+						Checks in total: {checksTotal}
+					</Chip>
+				</div>
 			</div>
 
 			{createSearchMutation.isError && (
