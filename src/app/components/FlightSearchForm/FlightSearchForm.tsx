@@ -65,9 +65,7 @@ export function FlightSearchForm() {
 	const [checkFinishAt, setCheckFinishAt] = useState("");
 	const [providers, setProviders] = useState<string[]>([]);
 
-	const [dateFrom, setDateFrom] = useState<CalendarDate | null>(
-		getCurrentCalendarDate,
-	);
+	const [dateFrom, setDateFrom] = useState<CalendarDate | null>(null);
 	const [dateTo, setDateTo] = useState<CalendarDate | null>(null);
 	const [isChecksTotalHighlighted, setIsChecksTotalHighlighted] =
 		useState(false);
@@ -91,6 +89,10 @@ export function FlightSearchForm() {
 	const checksTotalHighlightTimeoutRef = useRef<ReturnType<
 		typeof setTimeout
 	> | null>(null);
+
+	useEffect(() => {
+		setDateFrom(getCurrentCalendarDate());
+	}, []);
 
 	useEffect(() => {
 		if (previousChecksTotalRef.current === checksTotal) return;
