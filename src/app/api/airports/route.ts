@@ -1,167 +1,147 @@
 import { NextResponse } from "next/server";
 
-type Airport = {
-	iata: string; // IATA code (3 letters)
-	name: string;
-	city: string;
-	country: string;
+type AirLabsAirport = {
+	iata_code?: string;
+	icao_code?: string;
+	name?: string;
+	city?: string;
+	city_code?: string;
+	country_code?: string;
+	lat?: number;
+	lng?: number;
+	timezone?: string;
+	popularity?: number;
 };
 
-const AIRPORTS_CSV_URL = "https://ourairports.com/data/airports.csv";
+type AirLabsCity = {
+	name?: string;
+	city_code?: string;
+};
 
-// In-memory cache to avoid downloading/parsing the CSV on every request.
-let airportsCache: Airport[] | null = null;
+type AirLabsSuggestPayload = {
+	airports?: AirLabsAirport[];
+	airports_by_cities?: AirLabsAirport[];
+	airports_by_countries?: AirLabsAirport[];
+	cities?: AirLabsCity[];
+	cities_by_airports?: AirLabsCity[];
+	cities_by_countries?: AirLabsCity[];
+};
 
-function parseCSV(text: string): string[][] {
-	const rows: string[][] = [];
-	let row: string[] = [];
-	let field = "";
-	let inQuotes = false;
+const AIRLABS_SUGGEST_URL = "https://airlabs.co/api/v9/suggest";
+const AIRLABS_FIELDS =
+	"name,iata_code,icao_code,city,city_code,country_code,lat,lng,timezone,popularity";
+const AIRPORT_RESULT_KEYS = [
+	"airports",
+	"airports_by_cities",
+	"airports_by_countries",
+] as const;
+const CITY_RESULT_KEYS = [
+	"cities",
+	"cities_by_airports",
+	"cities_by_countries",
+] as const;
 
-	for (let i = 0; i < text.length; i++) {
-		const char = text[i]!;
-
-		if (char === `"` ) {
-			const next = text[i + 1];
-			if (inQuotes && next === `"`) {
-				// Escaped quote "" inside a quoted field.
-				field += `"`;
-				i++;
-				continue;
-			}
-
-			inQuotes = !inQuotes;
-			continue;
-		}
-
-		if (!inQuotes && char === ",") {
-			row.push(field);
-			field = "";
-			continue;
-		}
-
-		// Handle \n and \r\n.
-		if (!inQuotes && (char === "\n" || char === "\r")) {
-			if (char === "\r" && text[i + 1] === "\n") i++;
-			row.push(field);
-			field = "";
-			if (row.length > 1) rows.push(row);
-			row = [];
-			continue;
-		}
-
-		field += char;
-	}
-
-	// Flush remainder (if file doesn't end with newline).
-	if (field.length > 0 || row.length > 0) {
-		row.push(field);
-		if (row.length > 1) rows.push(row);
-	}
-
-	return rows;
+function getPayload(
+	data: AirLabsSuggestPayload & { response?: AirLabsSuggestPayload },
+) {
+	return data.response ?? data;
 }
 
-function parseAirportsCsv(csvText: string): Airport[] {
-	const rows = parseCSV(csvText);
-	if (rows.length === 0) return [];
+function cleanCityName(value: string | undefined) {
+	return value
+		?.replace(
+			/\s+(?:International|Regional|Domestic|Municipal)?\s*Airport$/i,
+			"",
+		)
+		.trim();
+}
 
-	const header = rows[0]!;
-	const colIndex = (name: string) => header.findIndex((h) => h === name);
+function toItem(a: AirLabsAirport, cityNamesByCode: Map<string, string>) {
+	const code = a.iata_code?.trim().toUpperCase();
+	if (!code) return null;
 
-	// OurAirports uses stable column names, but we still support a few variants.
-	const iata = colIndex("iata_code");
-	const name = colIndex("name");
+	const cityCode = a.city_code?.trim().toUpperCase();
 	const city =
-		colIndex("city") >= 0 ? colIndex("city") : colIndex("municipality");
-	const country =
-		colIndex("country") >= 0 ? colIndex("country") : colIndex("iso_country");
+		(cityCode ? cityNamesByCode.get(cityCode) : undefined) ||
+		cleanCityName(a.city) ||
+		cleanCityName(a.name) ||
+		code;
 
-	if (iata < 0 || name < 0 || city < 0 || country < 0) return [];
-
-	const out: Airport[] = [];
-	for (let r = 1; r < rows.length; r++) {
-		const row = rows[r]!;
-		const iataCode = (row[iata] ?? "").trim().toUpperCase();
-		if (!iataCode) continue;
-
-		const a: Airport = {
-			iata: iataCode,
-			name: (row[name] ?? "").trim(),
-			city: (row[city] ?? "").trim(),
-			// iso_country is 2-letter code (e.g. AU, GB). For UI it is usually OK,
-			// but you can map it to full country names later if needed.
-			country: (row[country] ?? "").trim(),
-		};
-
-		out.push(a);
-	}
-
-	return out;
-}
-
-const FALLBACK_AIRPORTS: Airport[] = [
-	{ iata: "SYD", name: "Sydney Airport", city: "Sydney", country: "AU" },
-	{ iata: "MEL", name: "Melbourne Airport", city: "Melbourne", country: "AU" },
-	{ iata: "BNE", name: "Brisbane Airport", city: "Brisbane", country: "AU" },
-];
-
-async function getAirports(): Promise<Airport[]> {
-	if (airportsCache) return airportsCache;
-
-	try {
-		const res = await fetch(AIRPORTS_CSV_URL, { method: "GET" });
-		if (!res.ok) throw new Error(`Failed to fetch airports.csv: ${res.status}`);
-		const text = await res.text();
-		const parsed = parseAirportsCsv(text);
-		airportsCache = parsed.length ? parsed : FALLBACK_AIRPORTS;
-	} catch (e) {
-		airportsCache = FALLBACK_AIRPORTS;
-	}
-
-	return airportsCache;
-}
-
-function toItem(a: Airport) {
 	return {
-		iata: a.iata,
-		label: `${a.city} (${a.iata})`,
-		city: a.city,
-		country: a.country,
-		name: a.name,
+		id: code,
+		code,
+		label: `${city} (${code})`,
+		name: a.name ?? "",
+		city,
+		country: a.country_code ?? "",
+		icao: a.icao_code,
+		cityCode,
+		lat: a.lat,
+		lng: a.lng,
+		timezone: a.timezone,
+		popularity: a.popularity ?? 0,
 	};
 }
 
 export async function GET(req: Request) {
 	const { searchParams } = new URL(req.url);
 	const qRaw = searchParams.get("q") ?? "";
-	const q = qRaw.trim().toLowerCase();
+	const q = qRaw.trim().slice(0, 30);
 
-	if (!q || q.length < 2) {
+	if (q.length < 3) {
 		return NextResponse.json({ items: [] });
 	}
 
-	const airports = await getAirports();
+	const apiKey = process.env.AIRLABS_KEY;
+	if (!apiKey) {
+		return NextResponse.json(
+			{ items: [], error: "AIRLABS_KEY is not configured" },
+			{ status: 500 },
+		);
+	}
 
-	const matches = airports
-		.filter((a) => {
-			const iata = a.iata.toLowerCase();
-			const city = a.city.toLowerCase();
-			const country = a.country.toLowerCase();
-			const name = a.name.toLowerCase();
+	const url = new URL(AIRLABS_SUGGEST_URL);
+	url.searchParams.set("q", q);
+	url.searchParams.set("api_key", apiKey);
+	url.searchParams.set("_fields", AIRLABS_FIELDS);
 
-			// Support queries like "Sydney (SYD)" by matching inside the IATA token too.
-			return (
-				iata === q ||
-				q.includes(iata) ||
-				city.includes(q) ||
-				name.includes(q) ||
-				country.includes(q)
-			);
-		})
-		.slice(0, 20)
-		.map(toItem);
+	try {
+		const res = await fetch(url, { method: "GET" });
+		if (!res.ok) {
+			return NextResponse.json({ items: [] }, { status: res.status });
+		}
 
-	return NextResponse.json({ items: matches });
+		const data = getPayload(await res.json());
+		const itemsByCode = new Map<
+			string,
+			NonNullable<ReturnType<typeof toItem>>
+		>();
+		const cityNamesByCode = new Map<string, string>();
+
+		for (const key of CITY_RESULT_KEYS) {
+			for (const city of data[key] ?? []) {
+				const cityCode = city.city_code?.trim().toUpperCase();
+				const cityName = city.name?.trim();
+				if (cityCode && cityName && !cityNamesByCode.has(cityCode)) {
+					cityNamesByCode.set(cityCode, cityName);
+				}
+			}
+		}
+
+		for (const key of AIRPORT_RESULT_KEYS) {
+			for (const airport of data[key] ?? []) {
+				const item = toItem(airport, cityNamesByCode);
+				if (!item || itemsByCode.has(item.code)) continue;
+				itemsByCode.set(item.code, item);
+			}
+		}
+
+		const items = Array.from(itemsByCode.values())
+			.sort((a, b) => b.popularity - a.popularity)
+			.slice(0, 20);
+
+		return NextResponse.json({ items });
+	} catch {
+		return NextResponse.json({ items: [] }, { status: 502 });
+	}
 }
-
