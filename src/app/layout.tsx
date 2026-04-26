@@ -27,12 +27,12 @@ export default function RootLayout({
 	return (
 		<html lang="en-GB" suppressHydrationWarning>
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col bg-background text-foreground antialiased`}
+				className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
 			>
 				<Providers>
 					<NavigationNavbar />
-					<main className="container mx-auto flex-1 px-4 py-8">{children}</main>
-					<footer className="py-4 text-center text-sm text-default-500">
+					<main className="container mx-auto px-4 py-8 pb-16">{children}</main>
+					<footer className="fixed inset-x-0 bottom-0 bg-background py-4 text-center text-sm text-default-500">
 						(c) Cheap Radar 2026
 					</footer>
 				</Providers>
