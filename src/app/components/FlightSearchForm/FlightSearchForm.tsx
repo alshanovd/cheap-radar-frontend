@@ -200,25 +200,20 @@ export function FlightSearchForm() {
 					))}
 				</Select>
 
-				<div className="flex w-full flex-col gap-2 lg:flex-1">
-					<CheckboxGroup
-						label="Providers"
-						orientation="horizontal"
-						value={providers}
-						isDisabled={isSubmitting}
-						onValueChange={setProviders}
-					>
-						{PROVIDER_OPTIONS.map((provider) => (
-							<Checkbox key={provider} value={provider}>
-								{provider}
-							</Checkbox>
-						))}
-					</CheckboxGroup>
-
-					<Chip color="primary" variant="flat" className="w-fit">
-						Checks in total: {checksTotal}
-					</Chip>
-				</div>
+				<CheckboxGroup
+					label="Providers"
+					orientation="horizontal"
+					value={providers}
+					isDisabled={isSubmitting}
+					onValueChange={setProviders}
+					className="w-full lg:flex-1"
+				>
+					{PROVIDER_OPTIONS.map((provider) => (
+						<Checkbox key={provider} value={provider}>
+							{provider}
+						</Checkbox>
+					))}
+				</CheckboxGroup>
 			</div>
 
 			{createSearchMutation.isError && (
@@ -235,6 +230,10 @@ export function FlightSearchForm() {
 			>
 				Search
 			</Button>
+
+			<Chip color="primary" variant="flat" className="w-fit self-center">
+				Checks in total: {checksTotal}
+			</Chip>
 		</div>
 	);
 }
