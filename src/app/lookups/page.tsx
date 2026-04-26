@@ -16,7 +16,7 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { type FlightSearch, getSearches } from "@/app/api/searches";
 
-const formatDate = (date: string) => moment(date).format("DD-MMM");
+const formatDate = (date: string) => moment(date).format("DD MMM");
 
 const formatStartedAt = (date: string) => moment(date).format("HH:mm - DD-MMM");
 
@@ -34,6 +34,14 @@ const getStatusColor = (status: FlightSearch["status"]) => {
 
 	return "default";
 };
+
+function InfoIcon() {
+	return (
+		<span className="inline-flex size-4 items-center justify-center rounded-full border border-default-400 text-[10px] font-semibold text-default-500">
+			i
+		</span>
+	);
+}
 
 export default function Lookups() {
 	const router = useRouter();
@@ -65,7 +73,7 @@ export default function Lookups() {
 						<TableColumn>DATE TO</TableColumn>
 						<TableColumn>PROVIDERS</TableColumn>
 						<TableColumn>STATUS</TableColumn>
-						<TableColumn>PRICE</TableColumn>
+						<TableColumn>LOWEST PRICE</TableColumn>
 						<TableColumn>STARTED AT</TableColumn>
 					</TableHeader>
 					<TableBody
@@ -79,7 +87,7 @@ export default function Lookups() {
 							return (
 								<TableRow
 									key={search.searchId}
-									className="cursor-pointer transition-colors hover:bg-default-100"
+									className="cursor-pointer transition-colors hover:bg-sky-100 dark:hover:bg-sky-900/40"
 								>
 									<TableCell>{search.airportFrom}</TableCell>
 									<TableCell>{search.airportTo}</TableCell>
@@ -89,8 +97,9 @@ export default function Lookups() {
 										<Tooltip
 											content={search.providers.join(", ") || "No providers"}
 										>
-											<span className="inline-flex cursor-help">
+											<span className="inline-flex cursor-help items-center gap-1">
 												{search.providers.length}
+												<InfoIcon />
 											</span>
 										</Tooltip>
 									</TableCell>
