@@ -33,7 +33,7 @@ export default function RootLayout({
 					<NavigationNavbar />
 					<main className="container mx-auto px-4 py-8 pb-16">{children}</main>
 					<footer className="fixed inset-x-0 bottom-0 bg-background py-4 text-center text-sm text-default-500">
-						(c) Cheap Radar 2026
+					© {new Date().getFullYear()} Cheap Radar
 					</footer>
 				</Providers>
 			</body>

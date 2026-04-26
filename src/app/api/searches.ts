@@ -31,6 +31,28 @@ export type SearchesResponse = {
 	searches: FlightSearch[];
 };
 
+export type CreateSearchRequest = {
+	airportFrom: string;
+	airportTo: string;
+	dateFrom: string;
+	dateTo: string;
+	checkIntervalHours: number;
+	checkFinishAt: string;
+	providers: string[];
+};
+
+export type CreateSearchResponse = {
+	searchId: string;
+};
+
 export function getSearches() {
 	return apiFetch<SearchesResponse>("/api/search/all");
+}
+
+export function createSearch(search: CreateSearchRequest) {
+	return apiFetch<CreateSearchResponse>("/api/search", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(search),
+	});
 }
