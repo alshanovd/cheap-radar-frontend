@@ -1,7 +1,7 @@
 "use client";
 
 import {
-	Link,
+	Chip,
 	Spinner,
 	Table,
 	TableBody,
@@ -9,94 +9,107 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
+	Tooltip,
 } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
+import moment from "moment";
+import { useRouter } from "next/navigation";
+import { type FlightSearch, getSearches } from "@/app/api/searches";
 
-type FlightSearch = {
-	id: string;
-	company: string;
-	datetime: string;
-	price: string;
-	link: string;
+const formatDate = (date: string) => moment(date).format("DD-MMM");
+
+const formatStartedAt = (date: string) => moment(date).format("HH:mm - DD-MMM");
+
+const formatPrice = (price: number) => `$${price.toFixed(2)}`;
+
+const getLowestTicketPrice = (search: FlightSearch) => {
+	if (search.tickets.length === 0) return null;
+
+	return Math.min(...search.tickets.map((ticket) => ticket.price));
 };
 
-const fetchLookups = async (): Promise<FlightSearch[]> => {
-	// Mock API delay
-	await new Promise((resolve) => setTimeout(resolve, 800));
-	return [
-		{
-			id: "1",
-			company: "SkyHigh Airlines",
-			datetime: "2026-04-12 10:30",
-			price: "$290",
-			link: "https://example.com/flight/1",
-		},
-		{
-			id: "2",
-			company: "Oceanic Air",
-			datetime: "2026-04-15 14:00",
-			price: "$450",
-			link: "https://example.com/flight/2",
-		},
-		{
-			id: "3",
-			company: "Continental",
-			datetime: "2026-04-20 08:15",
-			price: "$210",
-			link: "https://example.com/flight/3",
-		},
-	];
+const getStatusColor = (status: FlightSearch["status"]) => {
+	if (status === "COMPLETED") return "success";
+	if (status === "PROCESSING") return "primary";
+
+	return "default";
 };
 
 export default function Lookups() {
-	const { data, isLoading } = useQuery({
+	const router = useRouter();
+	const { data, isLoading, isError } = useQuery({
 		queryKey: ["lookups"],
-		queryFn: fetchLookups,
+		queryFn: getSearches,
 	});
+
+	const searches = data?.searches ?? [];
 
 	return (
 		<div className="flex flex-col gap-6">
 			<h1 className="text-3xl font-bold">Lookups</h1>
 
+			{isError && (
+				<p className="text-sm text-danger">Error of retrieving lookups data</p>
+			)}
+
 			<div className="w-full overflow-x-auto">
-				<Table aria-label="Lookups table" isStriped>
+				<Table
+					aria-label="Lookups table"
+					isStriped
+					onRowAction={(key) => router.push(`/lookups/${String(key)}`)}
+				>
 					<TableHeader>
-						<TableColumn>FLIGHT COMPANY</TableColumn>
-						<TableColumn>DATE / TIME</TableColumn>
+						<TableColumn>FROM</TableColumn>
+						<TableColumn>TO</TableColumn>
+						<TableColumn>DATE FROM</TableColumn>
+						<TableColumn>DATE TO</TableColumn>
+						<TableColumn>PROVIDERS</TableColumn>
+						<TableColumn>STATUS</TableColumn>
 						<TableColumn>PRICE</TableColumn>
-						<TableColumn>LINK</TableColumn>
+						<TableColumn>STARTED AT</TableColumn>
 					</TableHeader>
 					<TableBody
 						isLoading={isLoading}
 						loadingContent={<Spinner label="Loading..." />}
 						emptyContent={!isLoading && "No searches found."}
 					>
-						{(data || []).map((flight) => (
-							<TableRow key={flight.id}>
-								<TableCell>
-									<Link
-										href={`/lookups/${flight.id}`}
-										className="text-primary font-medium"
-									>
-										{flight.company}
-									</Link>
-								</TableCell>
-								<TableCell>{flight.datetime}</TableCell>
-								<TableCell className="text-success font-semibold">
-									{flight.price}
-								</TableCell>
-								<TableCell>
-									<Link
-										href={flight.link}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-blue-500 underline"
-									>
-										View
-									</Link>
-								</TableCell>
-							</TableRow>
-						))}
+						{searches.map((search) => {
+							const lowestPrice = getLowestTicketPrice(search);
+
+							return (
+								<TableRow
+									key={search.searchId}
+									className="cursor-pointer transition-colors hover:bg-default-100"
+								>
+									<TableCell>{search.airportFrom}</TableCell>
+									<TableCell>{search.airportTo}</TableCell>
+									<TableCell>{formatDate(search.dateFrom)}</TableCell>
+									<TableCell>{formatDate(search.dateTo)}</TableCell>
+									<TableCell>
+										<Tooltip
+											content={search.providers.join(", ") || "No providers"}
+										>
+											<span className="inline-flex cursor-help">
+												{search.providers.length}
+											</span>
+										</Tooltip>
+									</TableCell>
+									<TableCell>
+										<Chip
+											color={getStatusColor(search.status)}
+											size="sm"
+											variant="flat"
+										>
+											{search.status}
+										</Chip>
+									</TableCell>
+									<TableCell className="text-success font-semibold">
+										{lowestPrice === null ? "-" : formatPrice(lowestPrice)}
+									</TableCell>
+									<TableCell>{formatStartedAt(search.createdAt)}</TableCell>
+								</TableRow>
+							);
+						})}
 					</TableBody>
 				</Table>
 			</div>
