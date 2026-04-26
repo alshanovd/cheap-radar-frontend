@@ -13,7 +13,7 @@ import type { CalendarDate } from "@internationalized/date";
 import { I18nProvider } from "@react-aria/i18n";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createSearch } from "@/app/api/searches";
 import {
 	AirportAutocompleteField,
@@ -69,6 +69,8 @@ export function FlightSearchForm() {
 		getCurrentCalendarDate,
 	);
 	const [dateTo, setDateTo] = useState<CalendarDate | null>(null);
+	const [isChecksTotalHighlighted, setIsChecksTotalHighlighted] =
+		useState(false);
 
 	const createSearchMutation = useMutation({
 		mutationFn: createSearch,
@@ -85,6 +87,33 @@ export function FlightSearchForm() {
 		lastCheckOptions,
 	);
 	const checksTotal = daysCount * providers.length * selectedCheckCount;
+	const previousChecksTotalRef = useRef(checksTotal);
+	const checksTotalHighlightTimeoutRef = useRef<ReturnType<
+		typeof setTimeout
+	> | null>(null);
+
+	useEffect(() => {
+		if (previousChecksTotalRef.current === checksTotal) return;
+
+		previousChecksTotalRef.current = checksTotal;
+		setIsChecksTotalHighlighted(true);
+
+		if (checksTotalHighlightTimeoutRef.current) {
+			clearTimeout(checksTotalHighlightTimeoutRef.current);
+		}
+
+		checksTotalHighlightTimeoutRef.current = setTimeout(() => {
+			setIsChecksTotalHighlighted(false);
+			checksTotalHighlightTimeoutRef.current = null;
+		}, 300);
+
+		return () => {
+			if (checksTotalHighlightTimeoutRef.current) {
+				clearTimeout(checksTotalHighlightTimeoutRef.current);
+				checksTotalHighlightTimeoutRef.current = null;
+			}
+		};
+	}, [checksTotal]);
 
 	const handleSearch = () => {
 		if (
@@ -237,7 +266,15 @@ export function FlightSearchForm() {
 				Search
 			</Button>
 
-			<Chip color="primary" variant="flat" className="w-fit self-center">
+			<Chip
+				color="primary"
+				variant="flat"
+				className={`w-fit self-center transform-gpu transition-[transform,background-color,color,box-shadow,scale] duration-300 ease-out ${
+					isChecksTotalHighlighted
+						? "scale-110 bg-primary-100 text-primary-400 font-black shadow-lg dark:bg-primary-400 dark:text-primary-900"
+						: "scale-100"
+				}`}
+			>
 				Checks in total: {checksTotal}
 			</Chip>
 		</div>
