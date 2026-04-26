@@ -50,9 +50,7 @@ export function FlightSearchForm() {
 	const queryClient = useQueryClient();
 	const [from, setFrom] = useState("SYD");
 	const [to, setTo] = useState("MEL");
-	const [checkIntervalHours, setCheckIntervalHours] = useState<number | null>(
-		null,
-	);
+	const [checkIntervalKey, setCheckIntervalKey] = useState("");
 	const [lastCheckOptions, setLastCheckOptions] = useState<
 		{ value: string; label: string }[]
 	>([]);
@@ -72,6 +70,7 @@ export function FlightSearchForm() {
 		},
 	});
 	const isSubmitting = createSearchMutation.isPending;
+	const checkIntervalHours = checkIntervalKey ? Number(checkIntervalKey) : null;
 
 	const handleSearch = () => {
 		if (
@@ -143,27 +142,32 @@ export function FlightSearchForm() {
 					label="Check every"
 					placeholder="Select period"
 					className="w-full lg:w-40"
-					selectedKeys={checkIntervalHours ? [String(checkIntervalHours)] : []}
+					selectedKeys={checkIntervalKey ? [checkIntervalKey] : []}
 					isDisabled={isSubmitting}
 					onSelectionChange={(keys) => {
 						if (keys === "all") return;
 						const [interval] = Array.from(keys);
-						const nextInterval = interval ? Number(interval) : null;
+						const nextIntervalKey = interval ? String(interval) : "";
+						const nextIntervalHours = nextIntervalKey
+							? Number(nextIntervalKey)
+							: null;
 
-						setCheckIntervalHours(nextInterval);
-						if (!nextInterval) {
+						setCheckIntervalKey(nextIntervalKey);
+						if (!nextIntervalHours) {
 							setLastCheckOptions([]);
 							setCheckFinishAt("");
 							return;
 						}
 
-						const nextOptions = getLastCheckOptions(nextInterval);
+						const nextOptions = getLastCheckOptions(nextIntervalHours);
 						setLastCheckOptions(nextOptions);
 						setCheckFinishAt(nextOptions[0]?.value ?? "");
 					}}
 				>
 					{CHECK_INTERVAL_OPTIONS.map((interval) => (
-						<SelectItem key={String(interval)}>{interval}h</SelectItem>
+						<SelectItem key={String(interval)} textValue={`${interval}h`}>
+							{interval}h
+						</SelectItem>
 					))}
 				</Select>
 
@@ -180,7 +184,9 @@ export function FlightSearchForm() {
 					}}
 				>
 					{lastCheckOptions.map((option) => (
-						<SelectItem key={option.value}>{option.label}</SelectItem>
+						<SelectItem key={option.value} textValue={option.label}>
+							{option.label}
+						</SelectItem>
 					))}
 				</Select>
 
