@@ -12,16 +12,8 @@ export type LastCheckOption = {
 	label: string;
 };
 
-function toCalendarDate(date: moment.Moment) {
-	return parseDate(date.format(API_DATE_FORMAT));
-}
-
-export function getInitialDateFrom() {
-	return toCalendarDate(moment());
-}
-
-export function getInitialDateTo() {
-	return toCalendarDate(moment().add(3, "days"));
+export function getCurrentCalendarDate() {
+	return parseDate(moment().format(API_DATE_FORMAT));
 }
 
 export function formatCalendarDate(date: CalendarDate) {

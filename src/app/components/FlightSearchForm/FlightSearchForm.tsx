@@ -22,9 +22,8 @@ import {
 import {
 	CHECK_INTERVAL_OPTIONS,
 	formatCalendarDate,
+	getCurrentCalendarDate,
 	getInclusiveDaysCount,
-	getInitialDateFrom,
-	getInitialDateTo,
 	getLastCheckOptions,
 	getSelectedCheckCount,
 	type LastCheckOption,
@@ -49,22 +48,27 @@ const DEFAULT_TO: AirportOption = {
 	name: "Melbourne Airport",
 };
 
+const DATE_PICKER_CLASS_NAMES = {
+	calendarContent:
+		"[&_[data-today=true]]:ring-2 [&_[data-today=true]]:ring-primary [&_[data-today=true]]:ring-offset-2 [&_[data-today=true]]:ring-offset-content1",
+};
+
 export function FlightSearchForm() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
-	const [from, setFrom] = useState("SYD");
-	const [to, setTo] = useState("MEL");
+	const [from, setFrom] = useState("");
+	const [to, setTo] = useState("");
 	const [checkIntervalKey, setCheckIntervalKey] = useState("");
 	const [lastCheckOptions, setLastCheckOptions] = useState<LastCheckOption[]>(
 		[],
 	);
 	const [checkFinishAt, setCheckFinishAt] = useState("");
-	const [providers, setProviders] = useState<string[]>(["TEST"]);
+	const [providers, setProviders] = useState<string[]>([]);
 
 	const [dateFrom, setDateFrom] = useState<CalendarDate | null>(
-		getInitialDateFrom,
+		getCurrentCalendarDate,
 	);
-	const [dateTo, setDateTo] = useState<CalendarDate | null>(getInitialDateTo);
+	const [dateTo, setDateTo] = useState<CalendarDate | null>(null);
 
 	const createSearchMutation = useMutation({
 		mutationFn: createSearch,
@@ -135,6 +139,7 @@ export function FlightSearchForm() {
 						onChange={setDateFrom}
 						granularity="day"
 						isDisabled={isSubmitting}
+						classNames={DATE_PICKER_CLASS_NAMES}
 					/>
 					<DatePicker
 						label="Date To"
@@ -143,6 +148,7 @@ export function FlightSearchForm() {
 						onChange={setDateTo}
 						granularity="day"
 						isDisabled={isSubmitting}
+						classNames={DATE_PICKER_CLASS_NAMES}
 					/>
 				</I18nProvider>
 			</div>
