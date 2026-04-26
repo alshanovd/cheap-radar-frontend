@@ -25,6 +25,7 @@ export function FlightSearchForm() {
 	const [from, setFrom] = useState("SYD");
 	const [to, setTo] = useState("MEL");
 	const [checksPerDay, setChecksPerDay] = useState("5");
+	const [checkFinishAt, setCheckFinishAt] = useState("10");
 	const [ticketsCount, setTicketsCount] = useState("2");
 
 	const [fromQuery, setFromQuery] = useState("Sydney");
@@ -103,11 +104,12 @@ export function FlightSearchForm() {
 			dateTo,
 			ticketsCount,
 			checksPerDay,
+			checkFinishAt,
 		});
 	};
 
 	return (
-		<div className="w-full max-w-6xl p-6 bg-content1 rounded-2xl shadow-md flex flex-col lg:flex-row lg:flex-wrap gap-4 items-end">
+		<div className="w-full max-w-7xl p-6 bg-content1 rounded-2xl shadow-md flex flex-col lg:flex-row lg:flex-wrap gap-4 items-end">
 			<Autocomplete
 				label="From"
 				placeholder="e.g. Sydney (SYD)"
@@ -156,7 +158,7 @@ export function FlightSearchForm() {
 					granularity="day"
 				/>
 			</I18nProvider>
-
+{/* 
 			<Input
 				type="number"
 				label="Tickets"
@@ -165,7 +167,7 @@ export function FlightSearchForm() {
 				onValueChange={setTicketsCount}
 				min={1}
 				className="w-full lg:flex-none lg:w-32"
-			/>
+			/> */}
 
 			<Input
 				type="number"
@@ -177,10 +179,20 @@ export function FlightSearchForm() {
 				className="w-full lg:flex-none lg:w-32"
 			/>
 
+			<Input
+				type="number"
+				label="Total checks"
+				placeholder="e.g. 10"
+				value={checkFinishAt}
+				onValueChange={setCheckFinishAt}
+				min={1}
+				className="w-full lg:flex-none lg:w-40"
+			/>
+
 			<Button
 				color="primary"
 				size="lg"
-				className="w-full lg:flex-none lg:w-32 h-14"
+				className="w-full lg:flex-none lg:w-32 h-14 whitespace-nowrap"
 				onPress={handleSearch}
 			>
 				Search
