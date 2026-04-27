@@ -1,6 +1,8 @@
 import { apiFetch } from "./client";
 
 export type SearchTicket = {
+	airline: string;
+	airlineLogo: string;
 	airportFrom: string;
 	airportTo: string;
 	date: string;
@@ -47,6 +49,10 @@ export type CreateSearchResponse = {
 
 export function getSearches() {
 	return apiFetch<SearchesResponse>("/api/search/all");
+}
+
+export function getSearch(searchId: string) {
+	return apiFetch<FlightSearch>(`/api/search/${searchId}`);
 }
 
 export function createSearch(search: CreateSearchRequest) {
