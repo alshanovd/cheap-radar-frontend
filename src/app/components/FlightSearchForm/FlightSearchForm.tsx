@@ -63,7 +63,9 @@ export function FlightSearchForm() {
 		[],
 	);
 	const [checkFinishAt, setCheckFinishAt] = useState("");
-	const [providers, setProviders] = useState<string[]>([]);
+	const [providers, setProviders] = useState<string[]>(
+		PROVIDER_OPTIONS[0] ? [PROVIDER_OPTIONS[0]] : [],
+	);
 
 	const [dateFrom, setDateFrom] = useState<CalendarDate | null>(null);
 	const [dateTo, setDateTo] = useState<CalendarDate | null>(null);
@@ -271,7 +273,7 @@ export function FlightSearchForm() {
 			<Chip
 				color="primary"
 				variant="flat"
-				className={`w-fit self-center transform-gpu transition-[transform,background-color,color,box-shadow,scale] duration-300 ease-out ${
+				className={`w-fit self-center transform-gpu transition-[transform,background-color,color,box-shadow,scale] duration-150 ease-out ${
 					isChecksTotalHighlighted
 						? "scale-110 bg-primary-100 text-primary-400 font-black shadow-lg dark:bg-primary-400 dark:text-primary-900"
 						: "scale-100"
