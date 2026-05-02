@@ -37,9 +37,9 @@ export function NavigationNavbar() {
 					className="sm:hidden"
 				/>
 				<NavbarBrand>
-					<span className="font-bold text-xl text-primary md:text-2xl">
+					<Link className="font-bold text-xl text-primary md:text-2xl" href="/">
 						✈ Cheap Radar
-					</span>
+					</Link>
 				</NavbarBrand>
 			</NavbarContent>
 
@@ -58,7 +58,7 @@ export function NavigationNavbar() {
 
 			<NavbarContent justify="end">
 				<NavbarItem>
-				<Button color="primary" isDisabled variant="flat">
+					<Button color="primary" isDisabled variant="flat">
 						Sign In
 					</Button>
 				</NavbarItem>
