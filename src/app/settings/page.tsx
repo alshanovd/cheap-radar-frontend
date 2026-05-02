@@ -13,12 +13,13 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import {
 	getSettings,
+	isTheme,
 	type RemoteSettings,
 	updateSettings,
 } from "@/app/api/settings";
 
 export default function Settings() {
-	const { theme, systemTheme, setTheme } = useTheme();
+	const { setTheme } = useTheme();
 	const queryClient = useQueryClient();
 	const [mounted, setMounted] = useState(false);
 	const [showSaved, setShowSaved] = useState(false);
@@ -35,7 +36,7 @@ export default function Settings() {
 	});
 
 	useEffect(() => {
-		if (mounted && data?.theme) {
+		if (mounted && isTheme(data?.theme)) {
 			setTheme(data.theme);
 		}
 	}, [data?.theme, mounted, setTheme]);
@@ -76,6 +77,10 @@ export default function Settings() {
 	const updateSettingsMutation = useMutation({
 		mutationFn: updateSettings,
 		onMutate: async (settings) => {
+			if (isTheme(settings.theme)) {
+				setTheme(settings.theme);
+			}
+
 			await queryClient.cancelQueries({ queryKey: ["settings"] });
 			const previousSettings = queryClient.getQueryData<RemoteSettings>([
 				"settings",
@@ -87,17 +92,23 @@ export default function Settings() {
 		},
 		onSuccess: (settings) => {
 			queryClient.setQueryData(["settings"], settings);
+			if (isTheme(settings.theme)) {
+				setTheme(settings.theme);
+			}
 			showSavedNotice();
 		},
 		onError: (_error, _settings, context) => {
 			if (context?.previousSettings) {
 				queryClient.setQueryData(["settings"], context.previousSettings);
+				if (isTheme(context.previousSettings.theme)) {
+					setTheme(context.previousSettings.theme);
+				}
 			}
 		},
 	});
 
-	const resolvedTheme = theme === "system" ? systemTheme : theme;
-	const isDark = mounted && resolvedTheme === "dark";
+	const selectedTheme = isTheme(data?.theme) ? data.theme : undefined;
+	const isDark = mounted && selectedTheme === "dark";
 	const controlsDisabled = isLoading || !data;
 
 	const saveSettings = (settings: Partial<RemoteSettings>) => {
@@ -165,7 +176,6 @@ export default function Settings() {
 							onValueChange={(checked) => {
 								const nextTheme = checked ? "dark" : "light";
 
-								setTheme(nextTheme);
 								saveSettings({ theme: nextTheme });
 							}}
 						/>

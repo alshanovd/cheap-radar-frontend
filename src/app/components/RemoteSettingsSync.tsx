@@ -4,7 +4,7 @@ import { Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
-import { getSettings } from "@/app/api/settings";
+import { getSettings, isTheme } from "@/app/api/settings";
 
 export function RemoteSettingsSync() {
 	const { setTheme } = useTheme();
@@ -15,8 +15,7 @@ export function RemoteSettingsSync() {
 	});
 
 	useEffect(() => {
-		if (!data?.theme) return;
-		if (data.theme === "dark" || data.theme === "light") {
+		if (isTheme(data?.theme)) {
 			setTheme(data.theme);
 		}
 	}, [data?.theme, setTheme]);
