@@ -134,7 +134,7 @@ export function FlightSearchForm() {
 			!dateFrom ||
 			!dateTo ||
 			!checkIntervalHours ||
-			!checkFinishAt ||
+			!selectedCheckCount ||
 			providers.length === 0
 		) {
 			return;
@@ -146,7 +146,7 @@ export function FlightSearchForm() {
 			dateFrom: formatCalendarDate(dateFrom),
 			dateTo: formatCalendarDate(dateTo),
 			checkIntervalHours,
-			checkFinishAt,
+			checkCount: selectedCheckCount,
 			providers,
 		});
 	};
@@ -258,7 +258,7 @@ export function FlightSearchForm() {
 				>
 					{PROVIDER_OPTIONS.map((provider) => (
 						<Checkbox key={provider} value={provider}>
-							{provider}
+							{provider.toUpperCase()}
 						</Checkbox>
 					))}
 				</CheckboxGroup>

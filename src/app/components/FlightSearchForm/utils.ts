@@ -2,7 +2,7 @@ import { type CalendarDate, parseDate } from "@internationalized/date";
 import moment from "moment";
 
 export const CHECK_INTERVAL_OPTIONS = [3, 6, 9, 12, 15, 18, 21, 24];
-export const PROVIDER_OPTIONS = ["GOOGLE", "AVIASALES", "TEST"];
+export const PROVIDER_OPTIONS = ["google", "aviasales", "test"];
 
 const CHECK_OPTION_COUNT = 9;
 const API_DATE_FORMAT = "YYYY-MM-DD";

@@ -28,12 +28,10 @@ type AirportAutocompleteFieldProps = {
 };
 
 const MIN_AIRPORT_QUERY_LENGTH = 3;
-const SHORT_QUERY_MESSAGE = "Min 3 letters to search";
 
 function useAirportAutocomplete(initialOption: AirportOption) {
 	const [query, setQuery] = useState(initialOption.city);
 	const [options, setOptions] = useState<AirportOption[]>([initialOption]);
-	const [isFocused, setIsFocused] = useState(false);
 
 	useEffect(() => {
 		const search = query.trim();
@@ -57,13 +55,6 @@ function useAirportAutocomplete(initialOption: AirportOption) {
 	return {
 		options,
 		setQuery,
-		setIsFocused,
-		helperText:
-			isFocused &&
-			query.trim().length > 0 &&
-			query.trim().length < MIN_AIRPORT_QUERY_LENGTH
-				? SHORT_QUERY_MESSAGE
-				: undefined,
 	};
 }
 
@@ -81,14 +72,11 @@ export function AirportAutocompleteField({
 		<Autocomplete
 			label={label}
 			placeholder={placeholder}
-			description={airport.helperText}
 			className="w-full lg:flex-1 lg:min-w-[160px]"
 			items={airport.options}
 			selectedKey={value || null}
 			isDisabled={isDisabled}
 			onChange={(key: Key | null) => onChange(key ? String(key) : "")}
-			onFocus={() => airport.setIsFocused(true)}
-			onBlur={() => airport.setIsFocused(false)}
 			onInputChange={airport.setQuery}
 		>
 			{(option: AirportOption) => (

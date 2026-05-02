@@ -44,7 +44,7 @@ export type CreateSearchRequest = {
 	dateFrom: string;
 	dateTo: string;
 	checkIntervalHours: number;
-	checkFinishAt: string;
+	checkCount: number;
 	providers: string[];
 };
 
