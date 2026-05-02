@@ -27,11 +27,11 @@ import {
 	formatPrice,
 	formatTime,
 	getCheapestTicket,
+	getLookupRefetchInterval,
 	getStatusColor,
 	getTicketKey,
 	isCompletedStatus,
 	isScheduledStatus,
-	LOOKUP_REFETCH_INTERVAL_MS,
 } from "./utils";
 
 const SUMMARY_ROW_CLASS = "flex gap-4 border-b border-divider pb-2";
@@ -47,14 +47,16 @@ type LookupDetailsProps = {
 function SummaryRow({
 	label,
 	value,
+	valueClassName = SUMMARY_VALUE_CLASS,
 }: {
 	label: string;
 	value: React.ReactNode;
+	valueClassName?: string;
 }) {
 	return (
 		<div className={SUMMARY_ROW_CLASS}>
 			<span className={SUMMARY_LABEL_CLASS}>{label}</span>
-			<span className={SUMMARY_VALUE_CLASS}>{value}</span>
+			<span className={valueClassName}>{value}</span>
 		</div>
 	);
 }
@@ -67,9 +69,7 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 		queryKey: ["lookups", id],
 		queryFn: () => getSearch(id),
 		refetchInterval: (query) =>
-			isCompletedStatus(query.state.data?.status)
-				? false
-				: LOOKUP_REFETCH_INTERVAL_MS,
+			getLookupRefetchInterval(query.state.data?.status),
 	});
 
 	const cheapestTicket = data ? getCheapestTicket(data.tickets) : null;
@@ -130,6 +130,9 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 								<SummaryRow
 									label="Next Check At"
 									value={formatDateTime(data.nextCheckAt)}
+									valueClassName={
+										data.nextCheckAt ? "font-bold text-secondary" : undefined
+									}
 								/>
 								<SummaryRow
 									label="Check Interval"

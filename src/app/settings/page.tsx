@@ -31,7 +31,7 @@ export default function Settings() {
 
 	const { data, isLoading, isError } = useQuery({
 		queryKey: ["settings"],
-		queryFn: getSettings,
+		queryFn: ({ signal }) => getSettings(signal),
 	});
 
 	useEffect(() => {
@@ -75,12 +75,24 @@ export default function Settings() {
 
 	const updateSettingsMutation = useMutation({
 		mutationFn: updateSettings,
-		onMutate: (settings) => {
-			void queryClient.cancelQueries({ queryKey: ["settings"] });
+		onMutate: async (settings) => {
+			await queryClient.cancelQueries({ queryKey: ["settings"] });
+			const previousSettings = queryClient.getQueryData<RemoteSettings>([
+				"settings",
+			]);
+
 			queryClient.setQueryData(["settings"], settings);
+
+			return { previousSettings };
 		},
 		onSuccess: (settings) => {
 			queryClient.setQueryData(["settings"], settings);
+			showSavedNotice();
+		},
+		onError: (_error, _settings, context) => {
+			if (context?.previousSettings) {
+				queryClient.setQueryData(["settings"], context.previousSettings);
+			}
 		},
 	});
 
@@ -93,7 +105,6 @@ export default function Settings() {
 			queryClient.getQueryData<RemoteSettings>(["settings"]) ?? data;
 
 		if (!currentSettings) return;
-		showSavedNotice();
 		updateSettingsMutation.mutate({ ...currentSettings, ...settings });
 	};
 

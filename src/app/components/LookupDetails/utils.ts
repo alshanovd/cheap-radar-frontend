@@ -3,12 +3,20 @@ import moment from "moment";
 import type { FlightSearch, SearchTicket } from "@/app/api/searches";
 
 export const LOOKUP_REFETCH_INTERVAL_MS = 10_000;
+export const LOOKUP_SCHEDULED_REFETCH_INTERVAL_MS = 60_000;
 
 export const isCompletedStatus = (status?: FlightSearch["status"]) =>
 	status?.toLowerCase() === "completed";
 
 export const isScheduledStatus = (status?: FlightSearch["status"]) =>
 	status?.toLowerCase() === "scheduled";
+
+export function getLookupRefetchInterval(status?: FlightSearch["status"]) {
+	if (isCompletedStatus(status)) return false;
+	if (isScheduledStatus(status)) return LOOKUP_SCHEDULED_REFETCH_INTERVAL_MS;
+
+	return LOOKUP_REFETCH_INTERVAL_MS;
+}
 
 export const formatDate = (date: string) => moment(date).format("DD MMM YYYY");
 

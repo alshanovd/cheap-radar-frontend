@@ -1,17 +1,17 @@
 "use client";
 
-import { getSettings } from "@/app/api/settings";
 import { Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
+import { getSettings } from "@/app/api/settings";
 
 export function RemoteSettingsSync() {
 	const { setTheme } = useTheme();
 
 	const { data, isPending } = useQuery({
 		queryKey: ["settings"],
-		queryFn: getSettings,
+		queryFn: ({ signal }) => getSettings(signal),
 	});
 
 	useEffect(() => {
