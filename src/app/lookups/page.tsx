@@ -31,6 +31,8 @@ const getLowestTicketPrice = (search: FlightSearch) => {
 const getStatusColor = (status: FlightSearch["status"]) => {
 	if (status === "COMPLETED") return "success";
 	if (status === "PROCESSING") return "primary";
+	if (status === "CREATED") return "warning";
+	if (status === "SCHEDULED") return "secondary";
 
 	return "default";
 };

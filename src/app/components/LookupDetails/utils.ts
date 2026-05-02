@@ -29,6 +29,8 @@ export function getStatusColor(
 ): ChipProps["color"] {
 	if (isCompletedStatus(status)) return "success";
 	if (status.toLowerCase() === "processing") return "primary";
+	if (status.toLowerCase() === "created") return "warning";
+	if (status.toLowerCase() === "scheduled") return "secondary";
 
 	return "default";
 }

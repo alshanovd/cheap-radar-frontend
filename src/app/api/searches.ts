@@ -11,7 +11,12 @@ export type SearchTicket = {
 	provider: string;
 };
 
-export type SearchStatus = "COMPLETED" | "PROCESSING" | (string & {});
+export type SearchStatus =
+	| "COMPLETED"
+	| "PROCESSING"
+	| "CREATED"
+	| "SCHEDULED"
+	| (string & {});
 
 export type FlightSearch = {
 	searchId: string;
