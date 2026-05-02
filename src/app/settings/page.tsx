@@ -76,20 +76,6 @@ export default function Settings() {
 
 	const updateSettingsMutation = useMutation({
 		mutationFn: updateSettings,
-		onMutate: async (settings) => {
-			if (isTheme(settings.theme)) {
-				setTheme(settings.theme);
-			}
-
-			await queryClient.cancelQueries({ queryKey: ["settings"] });
-			const previousSettings = queryClient.getQueryData<RemoteSettings>([
-				"settings",
-			]);
-
-			queryClient.setQueryData(["settings"], settings);
-
-			return { previousSettings };
-		},
 		onSuccess: (settings) => {
 			queryClient.setQueryData(["settings"], settings);
 			if (isTheme(settings.theme)) {
@@ -97,19 +83,12 @@ export default function Settings() {
 			}
 			showSavedNotice();
 		},
-		onError: (_error, _settings, context) => {
-			if (context?.previousSettings) {
-				queryClient.setQueryData(["settings"], context.previousSettings);
-				if (isTheme(context.previousSettings.theme)) {
-					setTheme(context.previousSettings.theme);
-				}
-			}
-		},
 	});
 
 	const selectedTheme = isTheme(data?.theme) ? data.theme : undefined;
 	const isDark = mounted && selectedTheme === "dark";
-	const controlsDisabled = isLoading || !data;
+	const controlsDisabled =
+		isLoading || updateSettingsMutation.isPending || !data;
 
 	const saveSettings = (settings: Partial<RemoteSettings>) => {
 		const currentSettings =
