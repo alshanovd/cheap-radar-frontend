@@ -16,9 +16,10 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { type FlightSearch, getSearches } from "@/app/api/searches";
 
-const formatDate = (date: string) => moment(date).format("DD MMM");
+const formatDate = (date: string) => moment(date).format("D MMM");
 
-const formatStartedAt = (date: string) => moment(date).format("HH:mm - DD-MMM");
+const formatDateTime = (date: string | null) =>
+	date ? moment(date).format("HH:mm - D MMM") : "-";
 
 const formatPrice = (price: number) => `$${price.toFixed(2)}`;
 
@@ -77,6 +78,7 @@ export default function Lookups() {
 						<TableColumn>STATUS</TableColumn>
 						<TableColumn>LOWEST PRICE</TableColumn>
 						<TableColumn>STARTED AT</TableColumn>
+						<TableColumn>NEXT CHECK AT</TableColumn>
 					</TableHeader>
 					<TableBody
 						isLoading={isLoading}
@@ -117,7 +119,8 @@ export default function Lookups() {
 									<TableCell className="text-success font-semibold">
 										{lowestPrice === null ? "-" : formatPrice(lowestPrice)}
 									</TableCell>
-									<TableCell>{formatStartedAt(search.createdAt)}</TableCell>
+									<TableCell>{formatDateTime(search.createdAt)}</TableCell>
+									<TableCell>{formatDateTime(search.nextCheckAt)}</TableCell>
 								</TableRow>
 							);
 						})}

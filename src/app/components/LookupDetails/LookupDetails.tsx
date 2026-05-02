@@ -25,7 +25,6 @@ import {
 	formatDate,
 	formatDateTime,
 	formatPrice,
-	formatTime,
 	getCheapestTicket,
 	getLookupRefetchInterval,
 	getStatusColor,
@@ -184,8 +183,7 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 						<Table aria-label="Tickets table">
 							<TableHeader>
 								<TableColumn>AIRLINE</TableColumn>
-								<TableColumn>DATE</TableColumn>
-								<TableColumn>TIME</TableColumn>
+								<TableColumn>DEPARTURE</TableColumn>
 								<TableColumn>FROM</TableColumn>
 								<TableColumn>TO</TableColumn>
 								<TableColumn>PROVIDER</TableColumn>
@@ -214,8 +212,7 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 													<span className="font-medium">{ticket.airline}</span>
 												</div>
 											</TableCell>
-											<TableCell>{formatDate(ticket.date)}</TableCell>
-											<TableCell>{formatTime(ticket.date)}</TableCell>
+											<TableCell>{formatDateTime(ticket.date)}</TableCell>
 											<TableCell>{ticket.airportFrom}</TableCell>
 											<TableCell>{ticket.airportTo}</TableCell>
 											<TableCell>{ticket.provider}</TableCell>
