@@ -119,6 +119,14 @@ export function FlightSearchForm() {
 		};
 	}, [checksTotal]);
 
+	const handleDateFromChange = (nextDateFrom: CalendarDate | null) => {
+		setDateFrom(nextDateFrom);
+
+		if (nextDateFrom && dateTo && dateTo.compare(nextDateFrom) < 0) {
+			setDateTo(nextDateFrom);
+		}
+	};
+
 	const handleSearch = () => {
 		if (
 			!from ||
@@ -169,7 +177,7 @@ export function FlightSearchForm() {
 						label="Date From"
 						className="w-full lg:flex-1 lg:min-w-[140px]"
 						value={dateFrom}
-						onChange={setDateFrom}
+						onChange={handleDateFromChange}
 						granularity="day"
 						isDisabled={isSubmitting}
 						classNames={DATE_PICKER_CLASS_NAMES}
@@ -179,6 +187,7 @@ export function FlightSearchForm() {
 						className="w-full lg:flex-1 lg:min-w-[140px]"
 						value={dateTo}
 						onChange={setDateTo}
+						minValue={dateFrom ?? undefined}
 						granularity="day"
 						isDisabled={isSubmitting}
 						classNames={DATE_PICKER_CLASS_NAMES}
