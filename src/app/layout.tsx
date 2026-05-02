@@ -25,7 +25,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en-GB" suppressHydrationWarning>
+		<html lang="en-GB" className="dark">
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
 			>
@@ -33,7 +33,7 @@ export default function RootLayout({
 					<NavigationNavbar />
 					<main className="container mx-auto px-4 py-8 pb-16">{children}</main>
 					<footer className="fixed inset-x-0 bottom-0 bg-background py-4 text-center text-sm text-default-500">
-					© {new Date().getFullYear()} Cheap Radar
+						© {new Date().getFullYear()} Cheap Radar
 					</footer>
 				</Providers>
 			</body>

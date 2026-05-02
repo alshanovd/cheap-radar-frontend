@@ -9,37 +9,25 @@ import {
 	Switch,
 } from "@heroui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import {
 	getSettings,
-	isTheme,
 	type RemoteSettings,
 	updateSettings,
 } from "@/app/api/settings";
 
 export default function Settings() {
-	const { setTheme } = useTheme();
 	const queryClient = useQueryClient();
-	const [mounted, setMounted] = useState(false);
 	const [showSaved, setShowSaved] = useState(false);
 	const [isSavedVisible, setIsSavedVisible] = useState(false);
 	const savedShowFrame = useRef<number | null>(null);
 	const savedHideTimer = useRef<number | null>(null);
 	const savedRemoveTimer = useRef<number | null>(null);
 
-	useEffect(() => setMounted(true), []);
-
 	const { data, isLoading, isError } = useQuery({
 		queryKey: ["settings"],
 		queryFn: ({ signal }) => getSettings(signal),
 	});
-
-	useEffect(() => {
-		if (mounted && isTheme(data?.theme)) {
-			setTheme(data.theme);
-		}
-	}, [data?.theme, mounted, setTheme]);
 
 	useEffect(() => {
 		return () => {
@@ -78,15 +66,10 @@ export default function Settings() {
 		mutationFn: updateSettings,
 		onSuccess: (settings) => {
 			queryClient.setQueryData(["settings"], settings);
-			if (isTheme(settings.theme)) {
-				setTheme(settings.theme);
-			}
 			showSavedNotice();
 		},
 	});
 
-	const selectedTheme = isTheme(data?.theme) ? data.theme : undefined;
-	const isDark = mounted && selectedTheme === "dark";
 	const controlsDisabled =
 		isLoading || updateSettingsMutation.isPending || !data;
 
@@ -133,29 +116,6 @@ export default function Settings() {
 							isSelected={data?.notifications ?? false}
 							onValueChange={(notifications) => {
 								saveSettings({ notifications });
-							}}
-						/>
-					</CardBody>
-				</Card>
-
-				<Card>
-					<CardBody className="flex flex-row items-center justify-between p-6">
-						<div>
-							<h3 className="font-semibold text-lg">
-								{isDark ? "Dark Mode" : "Light Mode"}
-							</h3>
-							<p className="text-sm text-default-500">
-								Managed via system preferences mostly
-							</p>
-						</div>
-						<Switch
-							color="secondary"
-							isDisabled={controlsDisabled || !mounted}
-							isSelected={isDark}
-							onValueChange={(checked) => {
-								const nextTheme = checked ? "dark" : "light";
-
-								saveSettings({ theme: nextTheme });
 							}}
 						/>
 					</CardBody>
