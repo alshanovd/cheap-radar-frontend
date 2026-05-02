@@ -26,6 +26,7 @@ import {
 	formatDateTime,
 	formatPrice,
 	getCheapestTicket,
+	getLookupCheckDates,
 	getLookupRefetchInterval,
 	getStatusColor,
 	getTicketKey,
@@ -72,6 +73,9 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 	});
 
 	const cheapestTicket = data ? getCheapestTicket(data.tickets) : null;
+	const lookupCheckDates = data
+		? getLookupCheckDates(data.checkFinishAt, data.nextCheckAt)
+		: null;
 	const isCompleted = isCompletedStatus(data?.status);
 	const showLoadingBar = !isCompleted && !isScheduledStatus(data?.status);
 
@@ -120,7 +124,9 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 								/>
 								<SummaryRow
 									label="Check Finish At"
-									value={formatDateTime(data.checkFinishAt)}
+									value={formatDateTime(
+										lookupCheckDates?.checkFinishAt ?? null,
+									)}
 								/>
 								<SummaryRow
 									label="Last Checked At"
@@ -128,9 +134,11 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 								/>
 								<SummaryRow
 									label="Next Check At"
-									value={formatDateTime(data.nextCheckAt)}
+									value={formatDateTime(lookupCheckDates?.nextCheckAt ?? null)}
 									valueClassName={
-										data.nextCheckAt ? "font-bold text-secondary" : undefined
+										lookupCheckDates?.nextCheckAt
+											? "font-bold text-secondary"
+											: undefined
 									}
 								/>
 								<SummaryRow
