@@ -23,6 +23,9 @@ const formatDateTime = (date: string | null) =>
 
 const formatPrice = (price: number) => `$${price.toFixed(2)}`;
 
+const getDaysCount = (search: FlightSearch) =>
+	moment(search.dateTo).diff(moment(search.dateFrom), "days");
+
 const getLowestTicketPrice = (search: FlightSearch) => {
 	if (search.tickets.length === 0) return null;
 
@@ -74,6 +77,7 @@ export default function Lookups() {
 						<TableColumn>TO</TableColumn>
 						<TableColumn>DATE FROM</TableColumn>
 						<TableColumn>DATE TO</TableColumn>
+						<TableColumn>DAYS</TableColumn>
 						<TableColumn>PROVIDERS</TableColumn>
 						<TableColumn>STATUS</TableColumn>
 						<TableColumn>LOWEST PRICE</TableColumn>
@@ -97,6 +101,7 @@ export default function Lookups() {
 									<TableCell>{search.airportTo}</TableCell>
 									<TableCell>{formatDate(search.dateFrom)}</TableCell>
 									<TableCell>{formatDate(search.dateTo)}</TableCell>
+									<TableCell>{getDaysCount(search)}</TableCell>
 									<TableCell>
 										<Tooltip
 											content={search.providers.join(", ") || "No providers"}
