@@ -26,15 +26,6 @@ const formatPrice = (price: number) => `$${price.toFixed(2)}`;
 const getDaysCount = (search: FlightSearch) =>
 	moment(search.dateTo).diff(moment(search.dateFrom), "days");
 
-const getInclusiveDaysCount = (search: FlightSearch) => {
-	const daysDiff = getDaysCount(search);
-
-	return daysDiff < 0 ? 0 : daysDiff + 1;
-};
-
-const getTotalChecks = (search: FlightSearch) =>
-	getInclusiveDaysCount(search) * search.providers.length * search.checkCount;
-
 const getLowestTicketPrice = (search: FlightSearch) => {
 	if (search.tickets.length === 0) return null;
 
@@ -92,7 +83,7 @@ export default function Lookups() {
 						<TableColumn>LOWEST PRICE</TableColumn>
 						<TableColumn>STARTED AT</TableColumn>
 						<TableColumn>NEXT CHECK AT</TableColumn>
-						<TableColumn>TOTAL CHECKS</TableColumn>
+						<TableColumn>CHECK COUNT</TableColumn>
 					</TableHeader>
 					<TableBody
 						isLoading={isLoading}
@@ -136,7 +127,7 @@ export default function Lookups() {
 									</TableCell>
 									<TableCell>{formatDateTime(search.createdAt)}</TableCell>
 									<TableCell>{formatDateTime(search.nextCheckAt)}</TableCell>
-									<TableCell>{getTotalChecks(search)}</TableCell>
+									<TableCell>{search.checkCount}</TableCell>
 								</TableRow>
 							);
 						})}
