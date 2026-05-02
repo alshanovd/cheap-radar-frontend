@@ -20,8 +20,17 @@ export function getLookupRefetchInterval(status?: FlightSearch["status"]) {
 
 export const formatDate = (date: string) => moment(date).format("D MMM");
 
-export const formatDateTime = (date: string | null) =>
-	date ? moment(date).format("HH:mm - D MMM") : "-";
+export const formatDateTime = (date: string | null) => {
+	if (!date) return "-";
+
+	const value = moment(date);
+	const roundedValue =
+		value.seconds() || value.milliseconds()
+			? value.clone().add(1, "minute").startOf("minute")
+			: value;
+
+	return roundedValue.format("HH:mm - D MMM");
+};
 
 export const formatPrice = (price: number) => `$${price.toFixed(2)}`;
 
