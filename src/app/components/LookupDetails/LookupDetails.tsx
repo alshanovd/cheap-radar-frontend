@@ -34,7 +34,7 @@ import {
 } from "./utils";
 
 const SUMMARY_ROW_CLASS =
-	"flex justify-between gap-4 border-b border-divider pb-2";
+	"flex gap-4 border-b border-divider pb-2";
 const SUMMARY_LABEL_CLASS = "text-default-500";
 const SUMMARY_VALUE_CLASS = "font-medium";
 const CHEAPEST_ROW_CLASS = "bg-success-50 dark:bg-success-900/20";
