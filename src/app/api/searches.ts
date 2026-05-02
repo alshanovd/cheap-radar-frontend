@@ -13,7 +13,7 @@ export type SearchTicket = {
 
 export type SearchStatus =
 	| "COMPLETED"
-	| "PROCESSING"
+	| "ONGOING"
 	| "CREATED"
 	| "SCHEDULED"
 	| (string & {});

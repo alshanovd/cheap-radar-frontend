@@ -28,7 +28,7 @@ export function getStatusColor(
 	status: FlightSearch["status"],
 ): ChipProps["color"] {
 	if (isCompletedStatus(status)) return "success";
-	if (status.toLowerCase() === "processing") return "primary";
+	if (status.toLowerCase() === "ongoing") return "primary";
 	if (status.toLowerCase() === "created") return "warning";
 	if (status.toLowerCase() === "scheduled") return "secondary";
 
