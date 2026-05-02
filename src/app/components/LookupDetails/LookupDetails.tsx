@@ -30,11 +30,11 @@ import {
 	getStatusColor,
 	getTicketKey,
 	isCompletedStatus,
+	isScheduledStatus,
 	LOOKUP_REFETCH_INTERVAL_MS,
 } from "./utils";
 
-const SUMMARY_ROW_CLASS =
-	"flex gap-4 border-b border-divider pb-2";
+const SUMMARY_ROW_CLASS = "flex gap-4 border-b border-divider pb-2";
 const SUMMARY_LABEL_CLASS = "text-default-500";
 const SUMMARY_VALUE_CLASS = "font-medium";
 const CHEAPEST_ROW_CLASS = "bg-success-50 dark:bg-success-900/20";
@@ -74,6 +74,7 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 
 	const cheapestTicket = data ? getCheapestTicket(data.tickets) : null;
 	const isCompleted = isCompletedStatus(data?.status);
+	const showLoadingBar = !isCompleted && !isScheduledStatus(data?.status);
 
 	return (
 		<div className="mx-auto mt-8 flex w-full max-w-6xl flex-col gap-6">
@@ -168,7 +169,7 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 					</Card>
 
 					<div className="flex flex-col gap-4">
-						{!isCompleted && (
+						{showLoadingBar && (
 							<Progress
 								size="sm"
 								isIndeterminate

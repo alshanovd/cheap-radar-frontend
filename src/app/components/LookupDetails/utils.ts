@@ -7,6 +7,9 @@ export const LOOKUP_REFETCH_INTERVAL_MS = 10_000;
 export const isCompletedStatus = (status?: FlightSearch["status"]) =>
 	status?.toLowerCase() === "completed";
 
+export const isScheduledStatus = (status?: FlightSearch["status"]) =>
+	status?.toLowerCase() === "scheduled";
+
 export const formatDate = (date: string) => moment(date).format("DD MMM YYYY");
 
 export const formatDateTime = (date: string | null) =>
@@ -30,7 +33,7 @@ export function getStatusColor(
 	if (isCompletedStatus(status)) return "success";
 	if (status.toLowerCase() === "ongoing") return "primary";
 	if (status.toLowerCase() === "created") return "warning";
-	if (status.toLowerCase() === "scheduled") return "secondary";
+	if (isScheduledStatus(status)) return "secondary";
 
 	return "default";
 }
