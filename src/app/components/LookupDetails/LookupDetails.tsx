@@ -137,16 +137,18 @@ export function LookupDetails({ params }: LookupDetailsProps) {
 									label="Check Interval"
 									value={`${data.checkIntervalHours} hours`}
 								/>
+								<SummaryRow label="Check Count" value={data.checkCount} />
 								<SummaryRow
 									label="Providers"
 									value={data.providers.join(", ") || "-"}
 								/>
-							</div>
-							<div className={SUMMARY_ROW_CLASS}>
-								<span className={SUMMARY_LABEL_CLASS}>Cheapest Price</span>
-								<span className="text-success font-bold text-lg">
-									{cheapestTicket ? formatPrice(cheapestTicket.price) : "-"}
-								</span>
+								<SummaryRow
+									label="Cheapest Price"
+									value={
+										cheapestTicket ? formatPrice(cheapestTicket.price) : "-"
+									}
+									valueClassName="text-success font-bold text-lg"
+								/>
 							</div>
 							<div className="flex items-center justify-between pt-2">
 								<span className={SUMMARY_LABEL_CLASS}>Cheapest Option</span>

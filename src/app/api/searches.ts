@@ -22,6 +22,7 @@ export type FlightSearch = {
 	searchId: string;
 	airportFrom: string;
 	airportTo: string;
+	checkCount: number;
 	checkFinishAt: string;
 	checkIntervalHours: number;
 	createdAt: string;
