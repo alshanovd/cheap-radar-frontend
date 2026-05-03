@@ -21,6 +21,7 @@ export function NavigationNavbar() {
 	const menuItems = [
 		{ name: "New Search", href: "/" },
 		{ name: "Lookups", href: "/lookups" },
+		{ name: "Billing", href: "/billing" },
 		{ name: "Settings", href: "/settings" },
 		// { name: "Auth", href: "/auth" },
 	];
