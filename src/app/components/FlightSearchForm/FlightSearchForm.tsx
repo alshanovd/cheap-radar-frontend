@@ -288,7 +288,7 @@ export function FlightSearchForm() {
 						: "scale-100"
 				}`}
 			>
-				Checks in total: {checksTotal}
+				Credits: {checksTotal}
 			</Chip>
 		</div>
 	);
