@@ -18,9 +18,7 @@ import {
 import {
 	DEFAULT_THEME,
 	getStoredTheme,
-	isTheme,
 	saveTheme,
-	THEMES,
 	type Theme,
 } from "@/app/theme";
 
@@ -160,26 +158,19 @@ export default function Settings() {
 				</Card>
 
 				<Card>
-					<CardBody className="p-6">
-						<Select
-							label="Theme"
-							name="theme"
-							selectedKeys={[theme]}
-							onSelectionChange={(keys) => {
-								if (keys === "all") return;
-								const [selectedTheme] = Array.from(keys);
-								const nextTheme = String(selectedTheme);
-
-								if (!isTheme(nextTheme)) return;
-								updateTheme(nextTheme);
+					<CardBody className="flex flex-row items-center justify-between p-6">
+						<div>
+							<h3 className="font-semibold text-lg">Dark Theme</h3>
+							<p className="text-sm text-default-500">
+								Use the dark appearance across the app
+							</p>
+						</div>
+						<Switch
+							isSelected={theme === "dark"}
+							onValueChange={(isDarkTheme) => {
+								updateTheme(isDarkTheme ? "dark" : "light");
 							}}
-						>
-							{THEMES.map((availableTheme) => (
-								<SelectItem key={availableTheme}>
-									{availableTheme === "dark" ? "Dark" : "Light"}
-								</SelectItem>
-							))}
-						</Select>
+						/>
 					</CardBody>
 				</Card>
 			</div>
