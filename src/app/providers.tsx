@@ -4,7 +4,8 @@ import { HeroUIProvider } from "@heroui/react";
 import { I18nProvider } from "@react-aria/i18n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { syncStoredTheme } from "@/app/theme";
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
@@ -18,6 +19,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 				},
 			}),
 	);
+
+	useEffect(() => {
+		syncStoredTheme();
+	}, []);
 
 	return (
 		<QueryClientProvider client={queryClient}>

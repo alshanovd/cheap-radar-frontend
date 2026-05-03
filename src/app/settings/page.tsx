@@ -15,11 +15,20 @@ import {
 	type RemoteSettings,
 	updateSettings,
 } from "@/app/api/settings";
+import {
+	DEFAULT_THEME,
+	getStoredTheme,
+	isTheme,
+	saveTheme,
+	THEMES,
+	type Theme,
+} from "@/app/theme";
 
 export default function Settings() {
 	const queryClient = useQueryClient();
 	const [showSaved, setShowSaved] = useState(false);
 	const [isSavedVisible, setIsSavedVisible] = useState(false);
+	const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
 	const savedShowFrame = useRef<number | null>(null);
 	const savedHideTimer = useRef<number | null>(null);
 	const savedRemoveTimer = useRef<number | null>(null);
@@ -30,6 +39,8 @@ export default function Settings() {
 	});
 
 	useEffect(() => {
+		setTheme(getStoredTheme());
+
 		return () => {
 			if (savedShowFrame.current)
 				window.cancelAnimationFrame(savedShowFrame.current);
@@ -79,6 +90,12 @@ export default function Settings() {
 
 		if (!currentSettings) return;
 		updateSettingsMutation.mutate({ ...currentSettings, ...settings });
+	};
+
+	const updateTheme = (nextTheme: Theme) => {
+		setTheme(nextTheme);
+		saveTheme(nextTheme);
+		showSavedNotice();
 	};
 
 	return (
@@ -138,6 +155,30 @@ export default function Settings() {
 						>
 							<SelectItem key="USD">USD</SelectItem>
 							<SelectItem key="RUB">RUB</SelectItem>
+						</Select>
+					</CardBody>
+				</Card>
+
+				<Card>
+					<CardBody className="p-6">
+						<Select
+							label="Theme"
+							name="theme"
+							selectedKeys={[theme]}
+							onSelectionChange={(keys) => {
+								if (keys === "all") return;
+								const [selectedTheme] = Array.from(keys);
+								const nextTheme = String(selectedTheme);
+
+								if (!isTheme(nextTheme)) return;
+								updateTheme(nextTheme);
+							}}
+						>
+							{THEMES.map((availableTheme) => (
+								<SelectItem key={availableTheme}>
+									{availableTheme === "dark" ? "Dark" : "Light"}
+								</SelectItem>
+							))}
 						</Select>
 					</CardBody>
 				</Card>
